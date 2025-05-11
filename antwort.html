@@ -12,6 +12,9 @@
         .label { font-weight: bold; margin-bottom: 0.25rem; }
         .content { background: #f4f4f4; padding: 0.75rem; border-radius: 6px; }
         .error { color: red; margin-top: 2rem; }
+        textarea, button, input {
+            width: 100%; padding: 0.5rem; margin-top: 0.5rem; font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -26,11 +29,24 @@
         <div class="label">Antwort für dich:</div>
         <div id="antwort" class="content"></div>
     </div>
+
     <div id="fehlermeldung" class="error"></div>
 
+    <div id="reply" class="block" style="display:none;">
+        <h2>Möchtest du etwas zurückschreiben?</h2>
+        <form onsubmit="event.preventDefault(); sendeRueckfrage();">
+            <textarea id="rueckfrage" rows="5" placeholder="Schreib hier anonym weiter …" required></textarea>
+            <button type="submit">Abschicken</button>
+        </form>
+        <p id="replyStatus"></p>
+    </div>
+
     <script>
+        let globalCode = "";
+
         async function ladeAntwort() {
             const code = window.location.pathname.split("/antwort/")[1]?.trim().replace("/", "");
+            globalCode = code;
 
             const sheetURL = "https://docs.google.com/spreadsheets/d/1C90Mo4snzxH43vgwWbQNBPhnthVtQhGQ0qCSBQU69TQ/gviz/tq?tqx=out:json";
             try {
@@ -49,9 +65,38 @@
                 document.getElementById("kategorie").textContent = eintrag.c[1]?.v || "(leer)";
                 document.getElementById("nachricht").textContent = eintrag.c[2]?.v || "(leer)";
                 document.getElementById("antwort").textContent = eintrag.c[3]?.v || "Noch keine Antwort hinterlegt.";
+                document.getElementById("reply").style.display = "block";
             } catch (e) {
                 document.getElementById("antwortbereich").style.display = "none";
                 document.getElementById("fehlermeldung").textContent = "Fehler beim Laden der Daten. Bitte später erneut versuchen.";
+            }
+        }
+
+        async function sendeRueckfrage() {
+            const message = document.getElementById("rueckfrage").value.trim();
+            const timestamp = new Date().toISOString();
+
+            const data = {
+                Code: globalCode,
+                Kategorie: "Antwort auf Antwort",
+                Nachricht: message,
+                Antwort: "",
+                "E-Mail": "",
+                Zeitstempel: timestamp
+            };
+
+            const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+            try {
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                document.getElementById("replyStatus").textContent = "Deine Nachricht wurde gespeichert. Danke!";
+                document.getElementById("rueckfrage").value = "";
+            } catch (error) {
+                document.getElementById("replyStatus").textContent = "Fehler beim Absenden. Bitte später erneut versuchen.";
             }
         }
 
