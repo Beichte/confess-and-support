@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Confess & Support</title>
   <style>
     body {
       background: url('background.jpg') center/cover no-repeat fixed;
       font-family: sans-serif;
-      padding: 2rem;
       margin: 0;
+      padding: 2rem;
     }
     .box {
-      max-width: 600px;
-      margin: auto;
       background: rgba(255, 255, 255, 0.95);
       padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #999;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #aaa;
     }
     textarea, input {
       width: 100%;
-      margin-top: 0.5rem;
       padding: 0.75rem;
+      margin-top: 0.5rem;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
     button {
       margin-top: 1rem;
-      padding: 0.75rem 1.5rem;
       background: #ffd700;
+      padding: 0.75rem 1.5rem;
       border: none;
       border-radius: 6px;
       font-weight: bold;
@@ -37,63 +37,45 @@
     }
     .code-display {
       margin-top: 1rem;
-      padding: 1rem;
       background: #eee;
+      padding: 1rem;
+      border-radius: 8px;
       text-align: center;
-      border-radius: 8px;
       font-weight: bold;
-    }
-    .notice {
-      background: #eee;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
   <div class="box">
-    <h2>Beichte abschicken</h2>
+    <h2>Beichte absenden</h2>
     <textarea id="message" rows="5" placeholder="Was möchtest du loswerden?"></textarea>
-    <input id="pin" type="password" placeholder="Wähle einen geheimen PIN">
     <button onclick="submit()">Abschicken</button>
-
-    <div id="codeDisplay" class="code-display" style="display:none;"></div>
-
-    <div class="notice">
-      Du erhältst einen Code, den du mit deinem PIN eingeben kannst, um später Antworten zu sehen.<br>
-      ⏳ Bitte schau nach ca. 24 Stunden noch einmal vorbei.
-    </div>
+    <div id="codeBox" class="code-display" style="display:none;"></div>
 
     <h2>Antwort ansehen</h2>
-    <input id="codeRead" placeholder="Dein Code">
-    <input id="pinRead" placeholder="Dein PIN">
+    <input id="codeRead" placeholder="Dein Code z. B. mutig-herz">
     <button onclick="goto()">Antwort anzeigen</button>
   </div>
 
   <script>
     function submit() {
-      const msg = document.getElementById("message").value;
-      const pin = document.getElementById("pin").value;
-      if (!msg || !pin) return alert("Bitte Nachricht und PIN eingeben.");
-      const code = Math.random().toString(36).substring(2, 10);
+      const message = document.getElementById("message").value;
+      if (!message) return alert("Bitte gib eine Nachricht ein.");
 
       fetch("/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "confess", code, pin, message: msg })
-      }).then(res => res.json()).then(() => {
-        document.getElementById("codeDisplay").style.display = "block";
-        document.getElementById("codeDisplay").textContent = "🔒 Dein persönlicher Code: " + code;
+        body: JSON.stringify({ type: "confess", message })
+      }).then(res => res.json()).then(data => {
+        document.getElementById("codeBox").style.display = "block";
+        document.getElementById("codeBox").textContent = "🔑 Dein Code: " + data.code;
       });
     }
 
     function goto() {
       const code = document.getElementById("codeRead").value;
-      const pin = document.getElementById("pinRead").value;
-      if (!code || !pin) return alert("Bitte Code und PIN eingeben.");
-      window.location.href = "antwort.html?code=" + code + "&pin=" + pin;
+      if (!code) return alert("Bitte gib deinen Code ein.");
+      window.location.href = "antwort.html?code=" + code;
     }
   </script>
 </body>
