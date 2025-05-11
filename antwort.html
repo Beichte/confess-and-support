@@ -1,106 +1,105 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Deine Antwort – confess.reply</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
-        h1 { font-size: 1.5rem; }
-        .block { margin-bottom: 1.5rem; }
-        .label { font-weight: bold; margin-bottom: 0.25rem; }
-        .content { background: #f4f4f4; padding: 0.75rem; border-radius: 6px; }
-        .error { color: red; margin-top: 2rem; }
-        textarea, button, input {
-            width: 100%; padding: 0.5rem; margin-top: 0.5rem; font-size: 1rem;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Deine Antwort – confess.reply</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
+    h1 { font-size: 1.5rem; }
+    .block { margin-bottom: 1.5rem; }
+    .label { font-weight: bold; margin-bottom: 0.25rem; }
+    .content { background: #f4f4f4; padding: 0.75rem; border-radius: 6px; }
+    .error { color: red; margin-top: 2rem; }
+    textarea, button, input {
+      width: 100%; padding: 0.5rem; margin-top: 0.5rem; font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
-    <h1>Deine persönliche Antwort</h1>
-    <div id="antwortbereich" class="block">
-        <div class="label">Kategorie:</div>
-        <div id="kategorie" class="content"></div>
+  <h1>Deine persönliche Antwort</h1>
+  <div id="antwortbereich" class="block">
+    <div class="label">Kategorie:</div>
+    <div id="kategorie" class="content"></div>
 
-        <div class="label">Deine Nachricht:</div>
-        <div id="nachricht" class="content"></div>
+    <div class="label">Deine Nachricht:</div>
+    <div id="nachricht" class="content"></div>
 
-        <div class="label">Antwort für dich:</div>
-        <div id="antwort" class="content"></div>
-    </div>
+    <div class="label">Antwort für dich:</div>
+    <div id="antwort" class="content"></div>
+  </div>
 
-    <div id="fehlermeldung" class="error"></div>
+  <div id="fehlermeldung" class="error"></div>
 
-    <div id="reply" class="block" style="display:none;">
-        <h2>Möchtest du etwas zurückschreiben?</h2>
-        <form onsubmit="event.preventDefault(); sendeRueckfrage();">
-            <textarea id="rueckfrage" rows="5" placeholder="Schreib hier anonym weiter …" required></textarea>
-            <button type="submit">Abschicken</button>
-        </form>
-        <p id="replyStatus"></p>
-    </div>
+  <div id="reply" class="block" style="display:none;">
+    <h2>Möchtest du etwas zurückschreiben?</h2>
+    <form onsubmit="event.preventDefault(); sendeRueckfrage();">
+      <textarea id="rueckfrage" rows="5" placeholder="Schreib hier anonym weiter …" required></textarea>
+      <button type="submit">Abschicken</button>
+    </form>
+    <p id="replyStatus"></p>
+  </div>
 
-    <script>
-        let globalCode = "";
+  <script>
+    let globalCode = "";
 
-        async function ladeAntwort() {
-            const code = window.location.pathname.split("/antwort/")[1]?.trim().replace("/", "");
-            globalCode = code;
+    async function ladeAntwort() {
+      const code = window.location.pathname.split("/antwort/")[1]?.trim().replace("/", "");
+      globalCode = code;
 
-            const sheetURL = "https://docs.google.com/spreadsheets/d/1C90Mo4snzxH43vgwWbQNBPhnthVtQhGQ0qCSBQU69TQ/gviz/tq?tqx=out:json";
-            try {
-                const res = await fetch(sheetURL);
-                const text = await res.text();
-                const json = JSON.parse(text.substr(47).slice(0, -2));
-                const rows = json.table.rows;
+      const sheetURL = "https://docs.google.com/spreadsheets/d/1C90Mo4snzxH43vgwWbQNBPhnthVtQhGQ0qCSBQU69TQ/gviz/tq?tqx=out:json";
+      try {
+        const res = await fetch(sheetURL);
+        const text = await res.text();
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+        const rows = json.table.rows;
 
-                const eintrag = rows.find(r => r.c[0]?.v === code);
-                if (!eintrag) {
-                    document.getElementById("antwortbereich").style.display = "none";
-                    document.getElementById("fehlermeldung").textContent = "Kein Eintrag mit diesem Code gefunden.";
-                    return;
-                }
-
-                document.getElementById("kategorie").textContent = eintrag.c[1]?.v || "(leer)";
-                document.getElementById("nachricht").textContent = eintrag.c[2]?.v || "(leer)";
-                document.getElementById("antwort").textContent = eintrag.c[3]?.v || "Noch keine Antwort hinterlegt.";
-                document.getElementById("reply").style.display = "block";
-            } catch (e) {
-                document.getElementById("antwortbereich").style.display = "none";
-                document.getElementById("fehlermeldung").textContent = "Fehler beim Laden der Daten. Bitte später erneut versuchen.";
-            }
+        const eintrag = rows.find(r => r.c[0]?.v === code);
+        if (!eintrag) {
+          document.getElementById("antwortbereich").style.display = "none";
+          document.getElementById("fehlermeldung").textContent = "Kein Eintrag mit diesem Code gefunden.";
+          return;
         }
 
-        async function sendeRueckfrage() {
-            const message = document.getElementById("rueckfrage").value.trim();
-            const timestamp = new Date().toISOString();
+        document.getElementById("kategorie").textContent = eintrag.c[1]?.v || "(leer)";
+        document.getElementById("nachricht").textContent = eintrag.c[2]?.v || "(leer)";
+        document.getElementById("antwort").textContent = eintrag.c[3]?.v || "Noch keine Antwort hinterlegt.";
+        document.getElementById("reply").style.display = "block";
+      } catch (e) {
+        document.getElementById("antwortbereich").style.display = "none";
+        document.getElementById("fehlermeldung").textContent = "Fehler beim Laden der Daten. Bitte später erneut versuchen.";
+      }
+    }
 
-            const data = {
-                Code: globalCode,
-                Kategorie: "Antwort auf Antwort",
-                Nachricht: message,
-                Antwort: "",
-                "E-Mail": "",
-                Zeitstempel: timestamp
-            };
+    async function sendeRueckfrage() {
+      const message = document.getElementById("rueckfrage").value.trim();
+      const timestamp = new Date().toISOString();
 
-            const scriptURL = "https://script.google.com/macros/s/AKfycbwN7DXMAjdbFO7PxH_oefR3z7Uh9zR3YVbTYt0-SqU4E8m52TxGHYoWrhL5cO9dOnJu/exec";
-            try {
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                document.getElementById("replyStatus").textContent = "Deine Nachricht wurde gespeichert. Danke!";
-                document.getElementById("rueckfrage").value = "";
-            } catch (error) {
-                document.getElementById("replyStatus").textContent = "Fehler beim Absenden. Bitte später erneut versuchen.";
-            }
-        }
+      const data = {
+        Code: globalCode,
+        Kategorie: "Antwort auf Antwort",
+        Nachricht: message,
+        Antwort: "",
+        "E-Mail": "",
+        Zeitstempel: timestamp
+      };
 
-        ladeAntwort();
-    </script>
+      const scriptURL = "https://script.google.com/macros/s/AKfycbyPp1Nl3_Aj7q5ZthBkvkKxvorwL-cwPnrBvLHXs77PR3rXCxqpEXeYYfgccCiTl30Y9w/exec";
+      try {
+        await fetch(scriptURL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        document.getElementById("replyStatus").textContent = "Deine Nachricht wurde gespeichert. Danke!";
+        document.getElementById("rueckfrage").value = "";
+      } catch (error) {
+        document.getElementById("replyStatus").textContent = "Fehler beim Absenden. Bitte später erneut versuchen.";
+      }
+    }
+
+    ladeAntwort();
+  </script>
 </body>
 </html>
