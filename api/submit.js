@@ -13,13 +13,15 @@ export default async function handler(req, res) {
     });
 
     const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
-      const json = await response.json();
+    const debugBody = await response.text();
+
+    try {
+      const json = JSON.parse(debugBody);
       return res.status(200).json(json);
-    } else {
-      const text = await response.text();
-      return res.status(200).json({ message: text });
+    } catch (parseError) {
+      return res.status(200).json({ debug: debugBody, error: "Antwort war kein JSON" });
     }
+
   } catch (error) {
     return res.status(500).json({ error: "Proxy failed", details: error.message });
   }
