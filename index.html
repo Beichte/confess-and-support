@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Confess & Support</title>
   <style>
     body {
@@ -16,7 +16,7 @@
       padding: 2rem;
     }
     .box {
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.7);
       padding: 2rem;
       border-radius: 12px;
       max-width: 600px;
@@ -36,7 +36,17 @@
       border: none;
       background: #ffd700;
       color: #000;
+      font-weight: bold;
       cursor: pointer;
+    }
+    .code-display {
+      background: #222;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      text-align: center;
+      user-select: all;
     }
   </style>
 </head>
@@ -44,33 +54,48 @@
   <div class="box">
     <h1>Confess & Support</h1>
     <p>
-      Diese Plattform bietet Raum für anonyme Gedanken, Sorgen oder Beichten.
-      Wer möchte, kann sein Gewissen erleichtern – und durch eine freiwillige Spende Menschen in Not helfen.
-      Alle Einnahmen fließen transparent an Bedürftige oder Menschen in akuten Krisen.
+      Teile anonym deine Gedanken. Du bekommst einen persönlichen Code + PIN, um später deine Antwort zu lesen.
     </p>
+
     <h2>Beichte abschicken</h2>
     <textarea id="confession" rows="5" placeholder="Was möchtest du loswerden?"></textarea>
+    <input id="pin" type="password" placeholder="Dein geheimer PIN">
+    <input id="pinConfirm" type="password" placeholder="PIN bestätigen">
+    <p><small>Bitte notiere dir deinen Code und deinen PIN – ohne beides kannst du deine Antwort nicht sehen.</small></p>
     <button onclick="submitConfession()">Abschicken</button>
+
+    <div id="codeDisplay" style="display:none;">
+      <p>💬 Dein persönlicher Code:</p>
+      <div class="code-display" id="codeBox"></div>
+      <p>Merke dir auch deinen PIN! Ohne ihn kannst du später deine Antwort nicht sehen.</p>
+    </div>
+
     <h2>Antwort ansehen</h2>
-    <input id="code" placeholder="Dein Code" />
+    <input id="code" placeholder="Dein Code">
+    <input id="pinLookup" placeholder="PIN zum Code">
     <button onclick="gotoAntwort()">Antwort anzeigen</button>
   </div>
 
   <script>
     function submitConfession() {
       const confession = document.getElementById("confession").value;
+      const pin = document.getElementById("pin").value.trim();
+      const pinConfirm = document.getElementById("pinConfirm").value.trim();
+
+      if (pin.length < 3) return alert("Bitte wähle einen PIN mit mindestens 3 Zeichen.");
+      if (pin !== pinConfirm) return alert("PINs stimmen nicht überein.");
+
       const code = Math.random().toString(36).substring(2, 10);
 
       fetch("/api/submit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ type: "confess", code, message: confession })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "confess", code, message: confession, pin: pin })
       })
       .then(res => res.json())
-      .then(result => {
-        alert("Dein Code: " + code);
+      .then(() => {
+        document.getElementById("codeBox").textContent = code;
+        document.getElementById("codeDisplay").style.display = "block";
         document.getElementById("confession").value = "";
       })
       .catch(err => {
@@ -79,9 +104,10 @@
     }
 
     function gotoAntwort() {
-      const code = document.getElementById("code").value;
-      if (code) {
-        window.location.href = "antwort.html?code=" + code;
+      const code = document.getElementById("code").value.trim();
+      const pin = document.getElementById("pinLookup").value.trim();
+      if (code && pin) {
+        window.location.href = "antwort.html?code=" + code + "&pin=" + encodeURIComponent(pin);
       }
     }
   </script>

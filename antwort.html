@@ -16,10 +16,10 @@
       padding: 2rem;
     }
     .box {
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.7);
       padding: 2rem;
       border-radius: 12px;
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
     }
     textarea {
@@ -37,6 +37,14 @@
       background: #ffd700;
       color: #000;
       cursor: pointer;
+      font-weight: bold;
+    }
+    .thread {
+      white-space: pre-line;
+      background: #333;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -46,7 +54,8 @@
     <p><strong>Code:</strong> <span id="code"></span></p>
     <p><strong>Beichte:</strong><br><span id="confession"></span></p>
     <p><strong>Antwort:</strong><br><span id="reply"></span></p>
-    <p><strong>Verlauf:</strong><br><span id="thread"></span></p>
+
+    <div class="thread" id="thread">Verlauf wird geladen...</div>
 
     <h3>Weitere Nachricht schreiben</h3>
     <textarea id="followup" rows="4" placeholder="Deine neue Nachricht"></textarea>
@@ -56,14 +65,19 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
+    const pin = params.get("pin");
     document.getElementById("code").textContent = code;
 
-    fetch("https://script.google.com/macros/s/AKfycbzPw3V-dEMTw9uXGVU20DJKTOxdrpHRunVHMiRA1mSRcZWyayef5CovjqJikyZerMUPWQ/exec?code=" + code)
+    fetch("https://script.google.com/macros/s/AKfycbzPw3V-dEMTw9uXGVU20DJKTOxdrpHRunVHMiRA1mSRcZWyayef5CovjqJikyZerMUPWQ/exec?code=" + code + "&pin=" + pin)
       .then(res => res.json())
       .then(data => {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
         document.getElementById("confession").textContent = data.confession || "Keine Beichte gefunden.";
         document.getElementById("reply").textContent = data.reply || "Noch keine Antwort.";
-        document.getElementById("thread").textContent = data.thread || "-";
+        document.getElementById("thread").textContent = data.thread || "Noch keine weiteren Nachrichten.";
       });
 
     function sendReply() {
