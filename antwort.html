@@ -2,73 +2,32 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Antwort ansehen</title>
-  <style>
-    body {
-      background: url('background.jpg') center/cover no-repeat fixed;
-      font-family: sans-serif;
-      padding: 2rem;
-      margin: 0;
-    }
-    .box {
-      background: rgba(255,255,255,0.95);
-      max-width: 600px;
-      margin: auto;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #999;
-    }
-    .notice {
-      background: #eee;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-    .message {
-      margin-bottom: 1rem;
-      padding: 0.75rem;
-      border-radius: 6px;
-      background: #d1e7dd;
-    }
-    .reply {
-      background: #ffeeba;
-      padding: 0.75rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-    }
-    button {
-      background: #ffd700;
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="box">
     <h2>Antwort ansehen</h2>
-    <div class="notice">Falls du noch keine Antwort siehst, versuche es in 24 Stunden erneut.</div>
+    <div id="info" class="notice">Falls du noch keine Antwort siehst, versuche es in ca. 24 Stunden erneut.</div>
     <div id="conf" class="message">Lade Nachricht ...</div>
     <div id="rep" class="reply" style="display:none;"></div>
-    <button onclick="window.location.href='index.html'">Zurück</button>
+    <br><button onclick="window.location.href='index.html'">Zurück zur Startseite</button>
   </div>
 
   <script>
-    const code = new URLSearchParams(window.location.search).get("code");
+    const params = new URLSearchParams(location.search);
+    const code = params.get("code");
+    const pin = params.get("pin");
 
     fetch("/api/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "get_chat", code })
+      body: JSON.stringify({ type: "get_chat", code, pin })
     })
     .then(res => res.json())
     .then(data => {
       if (data.error) {
-        document.getElementById("conf").textContent = "⚠ Code nicht gefunden.";
+        document.getElementById("conf").textContent = "⚠ Code oder PIN falsch.";
         return;
       }
       document.getElementById("conf").textContent = "Du hast geschrieben: " + data.confession;

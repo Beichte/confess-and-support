@@ -1,0 +1,36 @@
+body {
+  background: url('background.jpg') center/cover no-repeat fixed;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 2rem;
+}
+.box {
+  max-width: 600px;
+  margin: auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #999;
+}
+textarea, input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+button {
+  margin-top: 1rem;
+  background: #ffd700;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.notice {
+  background: #eee;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
