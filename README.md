@@ -1,3 +1,2 @@
-# confess.reply HTML
-
-Dieses Formular erzeugt einen anonymen Code, sammelt Eingaben und ist vorbereitet für Google Sheets über Apps Script.
+# confess.reply – Antwortansicht
+Zeigt eine persönliche Antwort basierend auf dem anonymen Code.

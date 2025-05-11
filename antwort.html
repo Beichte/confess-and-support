@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Deine Antwort – confess.reply</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
+        h1 { font-size: 1.5rem; }
+        .block { margin-bottom: 1.5rem; }
+        .label { font-weight: bold; margin-bottom: 0.25rem; }
+        .content { background: #f4f4f4; padding: 0.75rem; border-radius: 6px; }
+        .error { color: red; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <h1>Deine persönliche Antwort</h1>
+    <div id="antwortbereich" class="block">
+        <div class="label">Kategorie:</div>
+        <div id="kategorie" class="content"></div>
+
+        <div class="label">Deine Nachricht:</div>
+        <div id="nachricht" class="content"></div>
+
+        <div class="label">Antwort für dich:</div>
+        <div id="antwort" class="content"></div>
+    </div>
+    <div id="fehlermeldung" class="error"></div>
+
+    <script>
+        async function ladeAntwort() {
+            const urlParams = new URLSearchParams(window.location.pathname.split("/antwort/")[1]);
+            const code = urlParams.toString().replace("/", "").trim();
+
+            const sheetURL = "https://docs.google.com/spreadsheets/d/1C90Mo4snzxH43vgwWbQNBPhnthVtQhGQ0qCSBQU69TQ/gviz/tq?tqx=out:json";
+            try {
+                const res = await fetch(sheetURL);
+                const text = await res.text();
+                const json = JSON.parse(text.substr(47).slice(0, -2));
+                const rows = json.table.rows;
+
+                const eintrag = rows.find(r => r.c[0]?.v === code);
+                if (!eintrag) {
+                    document.getElementById("antwortbereich").style.display = "none";
+                    document.getElementById("fehlermeldung").textContent = "Kein Eintrag mit diesem Code gefunden.";
+                    return;
+                }
+
+                document.getElementById("kategorie").textContent = eintrag.c[1]?.v || "(leer)";
+                document.getElementById("nachricht").textContent = eintrag.c[2]?.v || "(leer)";
+                document.getElementById("antwort").textContent = eintrag.c[3]?.v || "Noch keine Antwort hinterlegt.";
+            } catch (e) {
+                document.getElementById("antwortbereich").style.display = "none";
+                document.getElementById("fehlermeldung").textContent = "Fehler beim Laden der Daten. Bitte später erneut versuchen.";
+            }
+        }
+
+        ladeAntwort();
+    </script>
+</body>
+</html>
