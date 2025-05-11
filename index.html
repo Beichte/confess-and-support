@@ -1,1 +1,30 @@
-<!DOCTYPE html><html lang='de'><head><meta charset='UTF-8'><title>Beichte & Rat</title></head><body><h1>Was möchtest du loswerden?</h1><form><textarea></textarea><button>Abschicken</button></form></body></html>
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beichte & Rat</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
+        textarea, select, button { width: 100%; margin: 0.5rem 0; padding: 0.5rem; font-size: 1rem; }
+        h1 { font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+    <h1>Was möchtest du loswerden?</h1>
+    <form>
+        <select required>
+            <option value="">Bitte wählen …</option>
+            <option>Ich brauche einen Rat</option>
+            <option>Ich muss etwas beichten</option>
+            <option>Ich wünsche mir, dass jemand an mich denkt oder für mich betet – damit etwas gelingt</option>
+            <option>Ich hoffe, dass jemand mir gute Gedanken oder ein Gebet schickt – ich brauche Rückenwind</option>
+            <option>Ich wünsche mir Gebet oder gute Gedanken – ich hoffe, dass etwas für mich klappt</option>
+        </select>
+        <textarea rows="6" placeholder="Schreib hier, was du loswerden willst …" required></textarea>
+        <button type="submit">Abschicken</button>
+    </form>
+    <p style="margin-top: 2rem; font-size: 0.9rem;">Sprache & Antworten folgen bald …</p>
+</body>
+</html>

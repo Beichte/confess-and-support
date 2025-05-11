@@ -1,3 +1,3 @@
-# Confess & Support
+# Confess & Support – Schritt 2
 
-Zweisprachige Plattform für anonyme Beichten, Wünsche und persönliche Antworten.
+Mit Auswahlfeld, Textbereich und Layout für anonymes Loswerden.
