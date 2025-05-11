@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Only POST allowed' });
   }
 
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbzPw3V-dEMTw9uXGVU20DJKTOxdrpHRunVHMiRA1mSRcZWyayef5CovjqJikyZerMUPWQ/exec";
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbw2wOjM6wPT9ezEhdDVIKkCgnocpF481Qzm_KrtRCpDCgVHzGNwDUvVvrKXnjTPPuOPNQ/exec";
 
   try {
     const response = await fetch(scriptUrl, {
