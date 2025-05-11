@@ -6,56 +6,70 @@
   <title>Confess & Support</title>
   <style>
     body {
-      background: #f7f1e3;
+      background: url('background.jpg') center/cover no-repeat fixed;
       font-family: sans-serif;
-      margin: 0;
       padding: 2rem;
+      margin: 0;
     }
-    .chatbox {
-      background: #fff;
+    .box {
       max-width: 600px;
       margin: auto;
+      background: rgba(255, 255, 255, 0.95);
       padding: 2rem;
       border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
+      box-shadow: 0 0 10px #999;
     }
-    input, textarea {
+    textarea, input {
       width: 100%;
-      padding: 0.75rem;
       margin-top: 0.5rem;
+      padding: 0.75rem;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
     button {
       margin-top: 1rem;
-      background: #ffd700;
       padding: 0.75rem 1.5rem;
+      background: #ffd700;
       border: none;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
     }
-    .code {
+    .code-display {
       margin-top: 1rem;
       padding: 1rem;
       background: #eee;
       text-align: center;
+      border-radius: 8px;
       font-weight: bold;
+    }
+    .notice {
+      background: #eee;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <div class="chatbox">
-    <h2>Beichte absenden</h2>
+  <div class="box">
+    <h2>Beichte abschicken</h2>
     <textarea id="message" rows="5" placeholder="Was möchtest du loswerden?"></textarea>
-    <input id="pin" type="password" placeholder="Geheimer PIN zum späteren Abrufen">
-    <button onclick="submit()">Absenden</button>
-    <div class="code" id="codeBox" style="display:none;"></div>
+    <input id="pin" type="password" placeholder="Wähle einen geheimen PIN">
+    <button onclick="submit()">Abschicken</button>
+
+    <div id="codeDisplay" class="code-display" style="display:none;"></div>
+
+    <div class="notice">
+      Du erhältst einen Code, den du mit deinem PIN eingeben kannst, um später Antworten zu sehen.<br>
+      ⏳ Bitte schau nach ca. 24 Stunden noch einmal vorbei.
+    </div>
 
     <h2>Antwort ansehen</h2>
     <input id="codeRead" placeholder="Dein Code">
     <input id="pinRead" placeholder="Dein PIN">
-    <button onclick="goto()">Zur Antwort</button>
+    <button onclick="goto()">Antwort anzeigen</button>
   </div>
 
   <script>
@@ -70,14 +84,15 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "confess", code, pin, message: msg })
       }).then(res => res.json()).then(() => {
-        document.getElementById("codeBox").style.display = "block";
-        document.getElementById("codeBox").textContent = "Dein Code: " + code;
+        document.getElementById("codeDisplay").style.display = "block";
+        document.getElementById("codeDisplay").textContent = "🔒 Dein persönlicher Code: " + code;
       });
     }
 
     function goto() {
       const code = document.getElementById("codeRead").value;
       const pin = document.getElementById("pinRead").value;
+      if (!code || !pin) return alert("Bitte Code und PIN eingeben.");
       window.location.href = "antwort.html?code=" + code + "&pin=" + pin;
     }
   </script>
