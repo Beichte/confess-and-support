@@ -1,101 +1,80 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>confess.reply</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
-        label { display: block; margin-top: 1rem; }
-        input, select, textarea, button {
-            width: 100%; margin-top: 0.25rem; padding: 0.5rem; font-size: 1rem;
-        }
-        .section { margin-top: 2.5rem; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confess & Support</title>
+  <style>
+    body {
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      font-family: sans-serif;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+      padding: 2rem;
+    }
+    .box {
+      background: rgba(0,0,0,0.6);
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: auto;
+    }
+    textarea, input {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background: #ffd700;
+      color: #000;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <h1>Was möchtest du loswerden?</h1>
-    <form id="confessForm">
-        <label>Kategorie:
-            <select name="category" required>
-                <option value="">Bitte wählen …</option>
-                <option value="Rat">Ich brauche einen Rat</option>
-                <option value="Beichte">Ich muss etwas beichten</option>
-                <option value="Gedanken">Ich wünsche mir gute Gedanken oder Gebet</option>
-            </select>
-        </label>
-        <label>Deine Nachricht:
-            <textarea name="message" rows="6" placeholder="Schreib hier, was du loswerden willst …" required></textarea>
-        </label>
-        <label>(Optional) E-Mail für Antwort:
-            <input type="email" name="email" placeholder="nur wenn du eine direkte Antwort willst">
-        </label>
-        <button type="submit">Abschicken</button>
-    </form>
+  <div class="box">
+    <h1>Confess & Support</h1>
+    <p>
+      Diese Plattform bietet Raum für anonyme Gedanken, Sorgen oder Beichten.
+      Wer möchte, kann sein Gewissen erleichtern – und durch eine freiwillige Spende Menschen in Not helfen.
+      Alle Einnahmen fließen transparent an Bedürftige oder Menschen in akuten Krisen.
+    </p>
+    <h2>Beichte abschicken</h2>
+    <textarea id="confession" rows="5" placeholder="Was möchtest du loswerden?"></textarea>
+    <button onclick="submitConfession()">Abschicken</button>
+    <h2>Antwort ansehen</h2>
+    <input id="code" placeholder="Dein Code" />
+    <button onclick="gotoAntwort()">Antwort anzeigen</button>
+  </div>
 
-    <p id="response" style="margin-top:2rem;"></p>
+  <script>
+    function submitConfession() {
+      const confession = document.getElementById("confession").value;
+      const code = Math.random().toString(36).substring(2, 10);
+      fetch("https://script.google.com/macros/s/AKfycbxQmbawWZTLmw-1SweclLCte8c_1cevfv7B-dvUctyqy4pDC-nhWrmybdH9qTLI40sgJw/exec", {
+        method: "POST",
+        body: JSON.stringify({ type: "confess", code, message: confession })
+      }).then(() => {
+        alert("Dein Code: " + code);
+        document.getElementById("confession").value = "";
+      });
+    }
 
-    <div class="section">
-        <h2>Antwort ansehen</h2>
-        <p>Hast du schon einen Code? Gib ihn hier ein:</p>
-        <form onsubmit="event.preventDefault(); goToAnswer();">
-            <input type="text" id="codeInput" placeholder="z. B. abc123" required>
-            <button type="submit">Antwort anzeigen</button>
-        </form>
-    </div>
-
-    <script>
-        function generateCode(length = 6) {
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
-
-        document.getElementById('confessForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const form = e.target;
-            const code = generateCode();
-            const category = form.category.value;
-            const message = form.message.value;
-            const email = form.email.value;
-            const timestamp = new Date().toISOString();
-
-            const data = {
-                Code: code,
-                Kategorie: category,
-                Nachricht: message,
-                Antwort: '',
-                'E-Mail': email,
-                Zeitstempel: timestamp
-            };
-
-            const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
-            try {
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                document.getElementById('response').innerHTML =
-                    `Danke für deine Nachricht.<br><strong>Dein Antwortlink:</strong><br>
-                     <code>https://confess-and-support.vercel.app/antwort/${code}</code>`;
-                form.reset();
-            } catch (error) {
-                document.getElementById('response').textContent = 'Fehler beim Absenden. Bitte später erneut versuchen.';
-            }
-        });
-
-        function goToAnswer() {
-            const code = document.getElementById('codeInput').value.trim();
-            if (code) {
-                window.location.href = `/antwort/${code}`;
-            }
-        }
-    </script>
+    function gotoAntwort() {
+      const code = document.getElementById("code").value;
+      if (code) {
+        window.location.href = "antwort.html?code=" + code;
+      }
+    }
+  </script>
 </body>
 </html>
