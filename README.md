@@ -1,2 +1,3 @@
-# confess-and-support
-A simple bilingual site for anonymous confessions and emotional support
+# Confess & Support
+
+Zweisprachige Plattform für anonyme Beichten, Wünsche und persönliche Antworten.
