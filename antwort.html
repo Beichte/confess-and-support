@@ -58,7 +58,7 @@
     const code = params.get("code");
     document.getElementById("code").textContent = code;
 
-    fetch("https://script.google.com/macros/s/AKfycbxQmbawWZTLmw-1SweclLCte8c_1cevfv7B-dvUctyqy4pDC-nhWrmybdH9qTLI40sgJw/exec?code=" + code)
+    fetch("https://script.google.com/macros/s/AKfycbzPw3V-dEMTw9uXGVU20DJKTOxdrpHRunVHMiRA1mSRcZWyayef5CovjqJikyZerMUPWQ/exec?code=" + code)
       .then(res => res.json())
       .then(data => {
         document.getElementById("confession").textContent = data.confession || "Keine Beichte gefunden.";
@@ -68,12 +68,19 @@
 
     function sendReply() {
       const followup = document.getElementById("followup").value;
-      fetch("https://script.google.com/macros/s/AKfycbxQmbawWZTLmw-1SweclLCte8c_1cevfv7B-dvUctyqy4pDC-nhWrmybdH9qTLI40sgJw/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbzPw3V-dEMTw9uXGVU20DJKTOxdrpHRunVHMiRA1mSRcZWyayef5CovjqJikyZerMUPWQ/exec", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ type: "reply", code, reply: followup, thread: followup })
-      }).then(() => {
+      })
+      .then(() => {
         alert("Antwort gesendet");
         window.location.reload();
+      })
+      .catch(err => {
+        alert("Fehler beim Senden: " + err);
       });
     }
   </script>
