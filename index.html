@@ -1,1 +1,85 @@
-<!DOCTYPE html><html lang='de'><head><meta charset='UTF-8'><title>Beichte & Rat</title></head><body><h1>Was möchtest du loswerden?</h1><form><textarea></textarea><button>Abschicken</button></form></body></html>
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>confess.reply</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
+        label { display: block; margin-top: 1rem; }
+        input, select, textarea, button {
+            width: 100%; margin-top: 0.25rem; padding: 0.5rem; font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Was möchtest du loswerden?</h1>
+    <form id="confessForm">
+        <label>Kategorie:
+            <select name="category" required>
+                <option value="">Bitte wählen …</option>
+                <option value="Rat">Ich brauche einen Rat</option>
+                <option value="Beichte">Ich muss etwas beichten</option>
+                <option value="Gedanken">Ich wünsche mir gute Gedanken oder Gebet</option>
+            </select>
+        </label>
+        <label>Deine Nachricht:
+            <textarea name="message" rows="6" placeholder="Schreib hier, was du loswerden willst …" required></textarea>
+        </label>
+        <label>(Optional) E-Mail für Antwort:
+            <input type="email" name="email" placeholder="nur wenn du eine direkte Antwort willst">
+        </label>
+        <button type="submit">Abschicken</button>
+    </form>
+    <p id="response" style="margin-top:2rem;"></p>
+
+    <script>
+        function generateCode(length = 6) {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        document.getElementById('confessForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const code = generateCode();
+            const category = form.category.value;
+            const message = form.message.value;
+            const email = form.email.value;
+
+            const timestamp = new Date().toISOString();
+
+            const data = {
+                Code: code,
+                Kategorie: category,
+                Nachricht: message,
+                Antwort: '',
+                'E-Mail': email,
+                Zeitstempel: timestamp
+            };
+
+            // Hier kommt später die Google Apps Script URL rein
+            const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+            try {
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                document.getElementById('response').innerHTML =
+                    `Danke für deine Nachricht.<br><strong>Dein Antwortlink:</strong><br>
+                     <code>https://confess-and-support.vercel.app/antwort/${code}</code>`;
+                form.reset();
+            } catch (error) {
+                document.getElementById('response').textContent = 'Fehler beim Absenden. Bitte später erneut versuchen.';
+            }
+        });
+    </script>
+</body>
+</html>
