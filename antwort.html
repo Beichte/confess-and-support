@@ -30,8 +30,7 @@
 
     <script>
         async function ladeAntwort() {
-            const urlParams = new URLSearchParams(window.location.pathname.split("/antwort/")[1]);
-            const code = urlParams.toString().replace("/", "").trim();
+            const code = window.location.pathname.split("/antwort/")[1]?.trim().replace("/", "");
 
             const sheetURL = "https://docs.google.com/spreadsheets/d/1C90Mo4snzxH43vgwWbQNBPhnthVtQhGQ0qCSBQU69TQ/gviz/tq?tqx=out:json";
             try {
