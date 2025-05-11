@@ -68,7 +68,7 @@
     const pin = params.get("pin");
     document.getElementById("code").textContent = code;
 
-    fetch("https://script.google.com/macros/s/AKfycbzPw3V-dEMTw9uXGVU20DJKTOxdrpHRunVHMiRA1mSRcZWyayef5CovjqJikyZerMUPWQ/exec?code=" + code + "&pin=" + pin)
+    fetch("https://script.google.com/macros/s/AKfycbwH6MLVOfEW3YaGiHvTeKUbCErvt-7Zdr7k4V8QPqBXdHh7Cz8cdeB16BDkiY2ug_h7DQ/exec" + code + "&pin=" + pin)
       .then(res => res.json())
       .then(data => {
         if (data.error) {
