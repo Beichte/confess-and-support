@@ -35,16 +35,24 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "confess", message, pin })
       })
-      .then(res => res.json())
+     
+        
       .then(data => {
-        if (data.code) {
-          const box = document.getElementById("codeBox");
-          box.style.display = "block";
-          box.innerHTML = "🔑 Dein Code: <b>" + data.code + "</b>";
-        } else {
-          alert("Fehler: Kein Code erhalten.");
-        }
-      });
+  if (data.code) {
+    const box = document.getElementById("codeBox");
+    box.style.display = "block";
+    box.innerHTML = "🔑 Dein Code: <b>" + data.code + "</b>";
+  } else {
+    console.error("Antwort:", data);
+    alert("Fehler: Kein Code erhalten.\nDebug: " + JSON.stringify(data));
+  }
+});
+  
+        
+        
+        
+        
+    
     }
     function goto() {
       const code = document.getElementById("codeRead").value;
