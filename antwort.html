@@ -9,11 +9,12 @@
       font-family: sans-serif;
       background: url('background.jpg') center/cover no-repeat fixed;
       padding: 2rem;
+      margin: 0;
     }
     .chatbox {
       max-width: 600px;
       margin: auto;
-      background: rgba(255,255,255,0.95);
+      background: rgba(255, 255, 255, 0.95);
       padding: 2rem;
       border-radius: 10px;
       box-shadow: 0 0 10px #999;
@@ -47,6 +48,7 @@
     }
     button {
       margin-top: 1rem;
+      margin-right: 0.5rem;
       background: #ffd700;
       padding: 0.75rem 1.5rem;
       border: none;
@@ -54,14 +56,29 @@
       font-weight: bold;
       cursor: pointer;
     }
+    .notice {
+      font-size: 0.9rem;
+      color: #444;
+      background: #eee;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
   <div class="chatbox">
     <h2>Dein Gespräch</h2>
+    <div class="notice">
+      ⏳ Du kannst innerhalb von 24 Stunden mit einer Antwort rechnen.<br>
+      Du kannst jederzeit zurückkommen und deinen Code + PIN eingeben.
+    </div>
     <div id="chat" class="chatlog">Wird geladen...</div>
+
     <textarea id="followup" rows="3" placeholder="Antwort schreiben..."></textarea>
     <button onclick="reply()">Antwort absenden</button>
+    <button onclick="window.location.href='index.html'">Zurück zur Startseite</button>
+    <button onclick="window.location.reload()">Neu laden</button>
   </div>
 
   <script>
