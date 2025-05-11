@@ -3,103 +3,94 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Antwort anzeigen</title>
+  <title>Dein Chat</title>
   <style>
     body {
-      background-image: url('background.jpg');
-      background-size: cover;
-      background-attachment: fixed;
-      background-position: center;
       font-family: sans-serif;
-      color: #fff;
-      text-shadow: 1px 1px 2px #000;
+      background: #f4f4f4;
       padding: 2rem;
     }
-    .box {
-      background: rgba(0,0,0,0.7);
-      padding: 2rem;
-      border-radius: 12px;
-      max-width: 700px;
+    .chatbox {
+      max-width: 600px;
       margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .message {
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      max-width: 80%;
+    }
+    .from-user {
+      background: #d1e7dd;
+      align-self: flex-start;
+    }
+    .from-mod {
+      background: #ffeeba;
+      align-self: flex-end;
+      text-align: right;
+    }
+    .chatlog {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
     textarea {
       width: 100%;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
       padding: 0.5rem;
       border-radius: 6px;
-      border: none;
+      border: 1px solid #ccc;
     }
     button {
       margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      border: none;
       background: #ffd700;
-      color: #000;
-      cursor: pointer;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
       font-weight: bold;
-    }
-    .thread {
-      white-space: pre-line;
-      background: #333;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 1rem;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>Deine Antwort</h1>
-    <p><strong>Code:</strong> <span id="code"></span></p>
-    <p><strong>Beichte:</strong><br><span id="confession"></span></p>
-    <p><strong>Antwort:</strong><br><span id="reply"></span></p>
-
-    <div class="thread" id="thread">Verlauf wird geladen...</div>
-
-    <h3>Weitere Nachricht schreiben</h3>
-    <textarea id="followup" rows="4" placeholder="Deine neue Nachricht"></textarea>
-    <button onclick="sendReply()">Abschicken</button>
+  <div class="chatbox">
+    <h2>Dein Gespräch</h2>
+    <div id="chat" class="chatlog">Wird geladen...</div>
+    <textarea id="followup" rows="3" placeholder="Antwort schreiben..."></textarea>
+    <button onclick="reply()">Antwort absenden</button>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const code = params.get("code");
     const pin = params.get("pin");
-    document.getElementById("code").textContent = code;
+    const chatDiv = document.getElementById("chat");
 
     fetch("/api/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "get", code, pin })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        alert("Fehler: " + data.error);
-        return;
-      }
-      document.getElementById("confession").textContent = data.confession || "Keine Beichte gefunden.";
-      document.getElementById("reply").textContent = data.reply || "Noch keine Antwort.";
-      document.getElementById("thread").textContent = data.thread || "Noch keine weiteren Nachrichten.";
+      body: JSON.stringify({ type: "get_chat", code, pin })
+    }).then(res => res.json()).then(data => {
+      chatDiv.innerHTML = "";
+      data.entries.forEach(e => {
+        const div = document.createElement("div");
+        div.className = "message " + (e.sender === "user" ? "from-user" : "from-mod");
+        div.textContent = e.text;
+        chatDiv.appendChild(div);
+      });
     });
 
-    function sendReply() {
+    function reply() {
       const followup = document.getElementById("followup").value;
       fetch("/api/submit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ type: "reply", code, reply: followup, thread: followup })
-      })
-      .then(() => {
-        alert("Antwort gesendet");
-        window.location.reload();
-      })
-      .catch(err => {
-        alert("Fehler beim Senden: " + err);
-      });
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "reply", code, message: followup })
+      }).then(() => location.reload());
     }
   </script>
 </body>
