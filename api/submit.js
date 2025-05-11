@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Only POST allowed' });
   }
 
   const scriptUrl = "https://script.google.com/macros/s/AKfycbzPw3V-dEMTw9uXGVU20DJKTOxdrpHRunVHMiRA1mSRcZWyayef5CovjqJikyZerMUPWQ/exec";
@@ -14,8 +14,8 @@ export default async function handler(req, res) {
 
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
-      const data = await response.json();
-      return res.status(200).json(data);
+      const json = await response.json();
+      return res.status(200).json(json);
     } else {
       const text = await response.text();
       return res.status(200).json({ message: text });
