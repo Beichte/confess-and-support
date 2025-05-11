@@ -60,12 +60,21 @@
     function submitConfession() {
       const confession = document.getElementById("confession").value;
       const code = Math.random().toString(36).substring(2, 10);
+
       fetch("https://script.google.com/macros/s/AKfycbxQmbawWZTLmw-1SweclLCte8c_1cevfv7B-dvUctyqy4pDC-nhWrmybdH9qTLI40sgJw/exec", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ type: "confess", code, message: confession })
-      }).then(() => {
+      })
+      .then(res => res.text())
+      .then(msg => {
         alert("Dein Code: " + code);
         document.getElementById("confession").value = "";
+      })
+      .catch(err => {
+        alert("Fehler beim Senden: " + err);
       });
     }
 
