@@ -68,7 +68,7 @@
 
     function sendReply() {
       const followup = document.getElementById("followup").value;
-      fetch("https://script.google.com/macros/s/AKfycbzPw3V-dEMTw9uXGVU20DJKTOxdrpHRunVHMiRA1mSRcZWyayef5CovjqJikyZerMUPWQ/exec", {
+      fetch("/api/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
