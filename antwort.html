@@ -68,17 +68,21 @@
     const pin = params.get("pin");
     document.getElementById("code").textContent = code;
 
-    fetch("https://script.google.com/macros/s/AKfycbwH6MLVOfEW3YaGiHvTeKUbCErvt-7Zdr7k4V8QPqBXdHh7Cz8cdeB16BDkiY2ug_h7DQ/exec" + code + "&pin=" + pin)
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        document.getElementById("confession").textContent = data.confession || "Keine Beichte gefunden.";
-        document.getElementById("reply").textContent = data.reply || "Noch keine Antwort.";
-        document.getElementById("thread").textContent = data.thread || "Noch keine weiteren Nachrichten.";
-      });
+    fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "get", code, pin })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        alert("Fehler: " + data.error);
+        return;
+      }
+      document.getElementById("confession").textContent = data.confession || "Keine Beichte gefunden.";
+      document.getElementById("reply").textContent = data.reply || "Noch keine Antwort.";
+      document.getElementById("thread").textContent = data.thread || "Noch keine weiteren Nachrichten.";
+    });
 
     function sendReply() {
       const followup = document.getElementById("followup").value;
